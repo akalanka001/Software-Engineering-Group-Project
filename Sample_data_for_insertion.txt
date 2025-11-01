@@ -1,0 +1,148 @@
+set foreign_key_checks = 0;
+
+USE lms;
+
+INSERT INTO admin (admin_id) VALUES ('AD0001');
+
+INSERT INTO enrollment (ug_id, course_id, approved_by, approval_status) VALUES
+('TG1344','ict2113','AD0001','approved'),
+('TG1344','ict2122','AD0001','approved'),
+
+('TG1345','ict2133','AD0001','approved'),
+('TG1345','ict2142','AD0001','approved'),
+
+('TG1346','ict2152','AD0001','approved'),
+('TG1346','ict2122','AD0001','approved'),
+
+('TG1347','ict2113','AD0001','approved'),
+('TG1347','ict2133','AD0001','approved'),
+
+('TG1348','ict2152','AD0001','approved'),
+('TG1348','ict2142','AD0001','approved'),
+
+('TG1349','ict2113','AD0001','approved'),
+('TG1349','ict2152','AD0001','approved'),
+
+('TG1350','ict2133','AD0001','approved'),
+('TG1350','ict2113','AD0001','approved'),
+
+('TG1351','ict2122','AD0001','approved'),
+('TG1351','ict2152','AD0001','approved'),
+
+('TG1352','ict2142','AD0001','approved'),
+('TG1352','ict2113','AD0001','approved'),
+
+('TG1353','ict2133','AD0001','approved'),
+('TG1353','ict2152','AD0001','approved'),
+
+('TG1354','ict2113','AD0001','approved'),
+('TG1354','ict2142','AD0001','approved'),
+
+('TG1355','ict2122','AD0001','approved'),
+('TG1355','ict2152','AD0001','approved'),
+
+('TG1356','ict2133','AD0001','approved'),
+('TG1356','ict2113','AD0001','approved'),
+
+('TG1357','ict2152','AD0001','approved'),
+('TG1357','ict2122','AD0001','approved'),
+
+('TG1358','ict2142','AD0001','approved'),
+('TG1358','ict2133','AD0001','approved'),
+
+('TG1359','ict2113','AD0001','approved'),
+('TG1359','ict2142','AD0001','approved'),
+
+('TG1360','ict2152','AD0001','approved'),
+('TG1360','ict2122','AD0001','approved'),
+
+('TG1361','ict2133','AD0001','approved'),
+('TG1361','ict2113','AD0001','approved'),
+
+('TG1362','ict2152','AD0001','approved'),
+('TG1362','ict2142','AD0001','approved'),
+
+('TG1363','ict2113','AD0001','approved'),
+('TG1363','ict2133','AD0001','approved');
+
+INSERT INTO undergraduate (ug_id, ug_batch) VALUES
+('TG1344', 7),
+('TG1345', 7),
+('TG1346', 7),
+('TG1347', 7),
+('TG1348', 7),
+('TG1349', 7),
+('TG1350', 7),
+('TG1351', 7),
+('TG1352', 7),
+('TG1353', 7),
+('TG1354', 7),
+('TG1355', 7),
+('TG1356', 7),
+('TG1357', 7),
+('TG1358', 7),
+('TG1359', 7),
+('TG1360', 7),
+('TG1361', 7),
+('TG1362', 7),
+('TG1363', 7);
+
+INSERT INTO Lecturer (lec_id) VALUES
+('LC0001'),
+('LC0002'),
+('LC0003'),
+('LC0004'),
+('LC0005');
+
+
+INSERT INTO `user`
+    (user_id, user_password, user_name, user_email, user_phone, user_pro_pic, user_role)
+VALUES
+('AD0001', '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9', 'admin', 'admin@gmail.com', '0772348687', NULL, 'admin'),
+
+('LC0001', 'e09a46489b39fc28b3813b1101afc8300b59322474104431216f91cf774c306b', 'Lecturer 01', 'lect01@example.com', '0712345601', NULL, 'lecturer'),
+('LC0002', 'a4c1a193a793fced2101d743d417dad384a094e9bbf0f9b2e9d6992d3575d5e6', 'Lecturer 02', 'lect02@example.com', '0712345602', NULL, 'lecturer'),
+('LC0003', '28c8417490d21ac527d133c715c21478ceabaaa9b48f8df653c6bad144d8a690', 'Lecturer 03', 'lect03@example.com', '0712345603', NULL, 'lecturer'),
+('LC0004', '5561c4af656e91af3b3d4a1a598755eae73a4db887470d8f65a60bc075107934', 'Lecturer 04', 'lect04@example.com', '0712345604', NULL, 'lecturer'),
+('LC0005', '6b715d286787ebf6d67234900141338d95e8d844ba9ce7def27613e08c17ba15', 'Lecturer 05', 'lect05@example.com', '0712345605', NULL, 'lecturer'),
+
+('TG1344', 'fa66ed652b77f7a4bbc9e07201ea3e37cdef4e8e130890b137aa5f55a65af1d0', 'User 01', 'user01@example.com', '0713343561', NULL, 'undergraduate'),
+('TG1345', 'c4f7128356088f8e74c41aa91d415f173b83167480ee47129be8253e77d722a2', 'User 02', 'user02@example.com', '0713343562', NULL, 'undergraduate'),
+('TG1346', '3f775524adec11728ffaebc0310cfe2588aa8f6e47eedc9923f33147a15a42ef', 'User 03', 'user03@example.com', '0713343563', NULL, 'undergraduate'),
+('TG1347', '705708610ee2c13dab594519bc4055253e22795dbeb84d836648daf54122dd7b', 'User 04', 'user04@example.com', '0713343564', NULL, 'undergraduate'),
+('TG1348', 'b783eb8079ce216a8f18bc5bd244353f5e8262996577ad3568b20342daf7df06', 'User 05', 'user05@example.com', '0713343565', NULL, 'undergraduate'),
+('TG1349', 'a570267818e4c93205ed31b887bd7563fedab6ffe24e830c7d00e3652c2567ea', 'User 06', 'user06@example.com', '0713343566', NULL, 'undergraduate'),
+('TG1350', '3dab67719e06c940efebbb8ee864e7ab1d8e3ad6bd2c93a67f24db24a687c90a', 'User 07', 'user07@example.com', '0713343567', NULL, 'undergraduate'),
+('TG1351', '7316b3777a82e4153a2637f2582b1ea6ecacd68fed9622ae04c640a47f6b6092', 'User 08', 'user08@example.com', '0713343568', NULL, 'undergraduate'),
+('TG1352', 'd4fb32b4d740ae2b27c93bda920b92eebca3578ad2e5e2f052737ee72a31f31e', 'User 09', 'user09@example.com', '0713343569', NULL, 'undergraduate'),
+('TG1353', 'b35892cb8b089e03e4420b94df688122a2b76d4ad0f8b94ad20808bb029e48a5', 'User 10', 'user10@example.com', '0713343570', NULL, 'undergraduate');
+
+
+
+insert into course values
+('ict2113','Data Structures and Algorithms','LC0001','3','both',10000.00),
+('ict2122','Object Oriented Programming','LC0002','2','theory',12000),
+('ict2133','Server Side Web Development','LC0003','3','both',15000),
+('ict2142','Object Oriented Analysis and Design','LC0004','3','practical',9000),
+('ict2152','E-Commerce Implementation, Management and Security','LC0005','3','theory',5000);
+
+
+
+
+
+INSERT INTO time_table (
+    time_table_id, department, lec_id, course_id, admin_id, day, start_time, end_time, session_type
+) VALUES 
+    ('TT01', 'ICT', 'LC0001', 'ict2113', 'AD0001', 'Monday', '08:00:00', '10:00:00', 'theory'),
+    ('TT02', 'ICT', 'LC0002', 'ict2122', 'AD0001', 'Tuesday', '09:00:00', '11:00:00', 'theory'),
+    ('TT03', 'ICT', 'LC0003', 'ict2133', 'AD0001', 'Wednesday', '08:30:00', '10:30:00', 'theory'),
+    ('TT04', 'ICT', 'LC0004', 'ict2142', 'AD0001', 'Thursday', '09:00:00', '12:00:00', 'practical'),
+    ('TT05', 'ICT', 'LC0005', 'ict2152', 'AD0001', 'Friday', '08:00:00', '10:30:00', 'theory');
+
+
+INSERT INTO notice (notice_title, notice_content, notice_date) VALUES
+('Exam Schedule', 'The final exams will be held from May 15, 2025 to May 25, 2025. Please check the individual course schedules.', '2025-04-10'),
+('Holiday Announcement', 'The university will be closed on April 21, 2025, due to a national holiday.', '2025-04-15'),
+('Workshop on AI', 'A workshop on Artificial Intelligence will be conducted on April 22, 2025. All students are encouraged to attend.', '2025-04-16'),
+('Semester Registration', 'The semester registration process starts on April 20, 2025. Please complete the registration before April 30, 2025.', '2025-04-17');
+

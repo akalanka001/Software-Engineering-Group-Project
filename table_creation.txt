@@ -1,0 +1,237 @@
+-- =========================================================
+--  Drop old database if exists and recreate fresh
+-- =========================================================
+DROP DATABASE IF EXISTS lms;
+CREATE DATABASE lms;
+USE lms;
+
+-- =========================================================
+--  USER core table  (root entity)
+-- =========================================================
+CREATE TABLE user (
+    user_id      CHAR(6) PRIMARY KEY,
+    user_password VARCHAR(255) NOT NULL,
+    user_name    VARCHAR(50)  NOT NULL,
+    user_email   VARCHAR(50),
+    user_phone   VARCHAR(13),
+    user_batch   VARCHAR(20),
+    user_pro_pic VARCHAR(300),
+    user_role    ENUM('admin','lecturer','undergraduate','tech_officer') NOT NULL
+);
+
+-- =========================================================
+--  ROLE-SPECIFIC tables referencing user
+-- =========================================================
+CREATE TABLE admin (
+    admin_id CHAR(6) PRIMARY KEY,
+    CONSTRAINT fk_admin_user
+        FOREIGN KEY (admin_id)
+        REFERENCES user(user_id)
+        ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE lecturer (
+    lec_id CHAR(6) PRIMARY KEY,
+    CONSTRAINT fk_lect_user
+        FOREIGN KEY (lec_id)
+        REFERENCES user(user_id)
+        ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE undergraduate (
+    ug_id   CHAR(6) PRIMARY KEY,
+    ug_batch INT,
+    CONSTRAINT fk_ug_user
+        FOREIGN KEY (ug_id)
+        REFERENCES user(user_id)
+        ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- =========================================================
+--  ADMIN_NOTIFICATION
+-- =========================================================
+CREATE TABLE admin_notification (
+    notice_id   INT AUTO_INCREMENT PRIMARY KEY,
+    notice_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    message     VARCHAR(255) NOT NULL
+);
+
+-- =========================================================
+--  LECTURER_NOTIFICATION
+-- =========================================================
+CREATE TABLE lec_notification (
+    notice_id INT AUTO_INCREMENT PRIMARY KEY,
+    lec_id VARCHAR(20) NOT NULL,
+    notice_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    message VARCHAR(255) NOT NULL
+);
+
+ALTER TABLE lec_notification
+ADD CONSTRAINT fk_lec_notification
+FOREIGN KEY (lec_id) REFERENCES lecturer(lec_id);
+
+
+-- =========================================================
+--  UG_NOTIFICATION
+-- =========================================================
+CREATE TABLE ug_notification (
+    notice_id INT AUTO_INCREMENT PRIMARY KEY,
+    ug_id     CHAR(6) NOT NULL,
+    notice_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    message   VARCHAR(500) NOT NULL,
+
+    CONSTRAINT fk_ugnotif_undergraduate
+        FOREIGN KEY (ug_id)
+        REFERENCES undergraduate(ug_id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+);
+
+-- =========================================================
+--  NOTICE
+-- =========================================================
+CREATE TABLE notice (
+    notice_id INT AUTO_INCREMENT PRIMARY KEY,
+    notice_title   VARCHAR(30),
+    notice_content VARCHAR(500),
+    notice_date    DATE
+);
+
+
+-- =========================================================
+--  COURSE
+-- =========================================================
+CREATE TABLE course (
+    course_id   CHAR(7) PRIMARY KEY,
+    course_name VARCHAR(50),
+    lec_id      CHAR(6),
+    credit      INT,
+    course_type ENUM('theory','practical','both'),
+    course_fee  DECIMAL(10,2) DEFAULT 0.00,
+    CONSTRAINT fk_course_lec
+        FOREIGN KEY (lec_id)
+        REFERENCES lecturer(lec_id)
+        ON DELETE SET NULL ON UPDATE CASCADE
+);
+
+-- =========================================================
+--  ENROLLMENT
+-- =========================================================
+CREATE TABLE enrollment (
+    enroll_id       INT AUTO_INCREMENT PRIMARY KEY,
+    ug_id           CHAR(6) NOT NULL,
+    course_id       CHAR(7) NOT NULL,
+    enroll_date     DATETIME DEFAULT CURRENT_TIMESTAMP,
+    approved_by     CHAR(6),
+    approval_status ENUM('pending','approved','rejected') DEFAULT 'pending',
+    payment_slip    VARCHAR(255),
+	CONSTRAINT fk_enroll_ug
+        FOREIGN KEY (ug_id)
+        REFERENCES undergraduate(ug_id)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT fk_enroll_course
+        FOREIGN KEY (course_id)
+        REFERENCES course(course_id)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT fk_enroll_admin
+        FOREIGN KEY (approved_by)
+        REFERENCES admin(admin_id)
+        ON DELETE SET NULL ON UPDATE CASCADE
+);
+-- =========================================================
+--  LECTURE MATERIALS
+-- =========================================================
+CREATE TABLE lecture_materials (
+    material_id INT AUTO_INCREMENT PRIMARY KEY,
+    course_id CHAR(7) NOT NULL,
+    material_name VARCHAR(100) NOT NULL,
+    material_path VARCHAR(255) NOT NULL,
+    material_type ENUM('pdf','video','ppt','other') NOT NULL,
+    FOREIGN KEY (course_id)
+        REFERENCES course(course_id)
+        ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- =========================================================
+--  TIME TABLE
+-- =========================================================
+CREATE TABLE time_table (
+    time_table_id VARCHAR(5) PRIMARY KEY,
+    department VARCHAR(3),
+    lec_id CHAR(6),
+    course_id CHAR(7),
+    admin_id CHAR(6),
+    day VARCHAR(10),
+    start_time TIME,
+    end_time TIME,
+    session_type ENUM('theory','practical'),
+    CONSTRAINT fk_timetable_lec
+        FOREIGN KEY (lec_id)
+        REFERENCES lecturer(lec_id)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT fk_timetable_course
+        FOREIGN KEY (course_id)
+        REFERENCES course(course_id)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT fk_timetable_admin
+        FOREIGN KEY (admin_id)
+        REFERENCES admin(admin_id)
+        ON DELETE CASCADE ON UPDATE CASCADE
+);
+CREATE TABLE module (
+    module_id   INT AUTO_INCREMENT PRIMARY KEY,
+    course_id   CHAR(7) NOT NULL,
+    title       VARCHAR(100),
+    video_path  VARCHAR(255),
+
+    CONSTRAINT fk_module_course
+        FOREIGN KEY (course_id)
+        REFERENCES course(course_id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+)
+ENGINE = InnoDB
+DEFAULT CHARSET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
+
+CREATE TABLE module_progress (
+    ug_id      CHAR(6)     NOT NULL,
+    course_id  CHAR(7)     NOT NULL,
+    module_id  INT         NOT NULL,
+    completed  TINYINT(1)  DEFAULT 0,
+    completed_at DATETIME  DEFAULT CURRENT_TIMESTAMP,
+
+    PRIMARY KEY (ug_id, module_id),
+
+    CONSTRAINT fk_progress_student
+        FOREIGN KEY (ug_id)
+        REFERENCES undergraduate(ug_id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+
+    CONSTRAINT fk_progress_module
+        FOREIGN KEY (module_id)
+        REFERENCES module(module_id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+
+    CONSTRAINT fk_progress_course
+        FOREIGN KEY (course_id)
+        REFERENCES course(course_id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+);
+CREATE TABLE activity_log (
+  log_id   INT AUTO_INCREMENT PRIMARY KEY,
+  user_id  CHAR(6) NOT NULL,
+  action   VARCHAR(255) NOT NULL,
+  log_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_log_user
+      FOREIGN KEY (user_id)
+      REFERENCES user(user_id)
+      ON DELETE CASCADE ON UPDATE CASCADE
+)
+ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_0900_ai_ci;
+
