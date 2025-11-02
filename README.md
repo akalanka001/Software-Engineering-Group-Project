@@ -1,1 +1,1 @@
-# JAVA_Project
+# Software Engineering Group project
