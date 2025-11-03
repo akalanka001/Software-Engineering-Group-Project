@@ -1,0 +1,293 @@
+package Register;
+
+import Login.Login;
+import Utils.EmailSender;
+import Utils.ThemeManager;
+
+import javax.swing.*;
+import java.awt.*;
+
+/**
+ * Professional, neatly sized registration form styled with ThemeManager.
+ * Added: name validation (letters ≤50 chars), password length check (exactly 8 chars),
+ * and password visibility toggle (“eye” icon).
+ */
+public class RegisterForm extends JFrame {
+
+    public RegisterForm() {
+        ThemeManager.initialize(); // load proper FlatLaf theme
+        initComponents();
+    }
+
+    private void initComponents() {
+
+        setTitle("Undergraduate Registration");
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setResizable(false);
+        setPreferredSize(new Dimension(600, 550));
+
+        JPanel mainPanel = new JPanel(new BorderLayout(0, 10));
+        mainPanel.setBackground(Color.WHITE);
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(15, 25, 15, 25));
+
+        // ---------- HEADER ----------
+        JLabel lblHeader = new JLabel("Undergraduate Registration", SwingConstants.CENTER);
+        lblHeader.setFont(new Font("Segoe UI Black", Font.BOLD, 22));
+        lblHeader.setForeground(ThemeManager.LIGHT_BLUE);
+        lblHeader.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+        mainPanel.add(lblHeader, BorderLayout.NORTH);
+
+        // ---------- FORM ----------
+        JPanel formPanel = new JPanel(new GridBagLayout());
+        formPanel.setOpaque(false);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(8, 10, 8, 10);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.WEST;
+
+        Font labelFont = new Font("Segoe UI Semibold", Font.PLAIN, 15);
+        Font fieldFont = new Font("Segoe UI", Font.PLAIN, 15);
+        int textWidth = 250;
+
+        gbc.gridx = 0; gbc.gridy = 0;
+        formPanel.add(createLabel("First Name:", labelFont), gbc);
+        gbc.gridx = 1;
+        txtFirstName = createTextField(fieldFont, textWidth);
+        formPanel.add(txtFirstName, gbc);
+
+        gbc.gridx = 0; gbc.gridy++;
+        formPanel.add(createLabel("Last Name:", labelFont), gbc);
+        gbc.gridx = 1;
+        txtLastName = createTextField(fieldFont, textWidth);
+        formPanel.add(txtLastName, gbc);
+
+        gbc.gridx = 0; gbc.gridy++;
+        formPanel.add(createLabel("Email:", labelFont), gbc);
+        gbc.gridx = 1;
+        txtEmail = createTextField(fieldFont, textWidth);
+        formPanel.add(txtEmail, gbc);
+
+        gbc.gridx = 0; gbc.gridy++;
+        formPanel.add(createLabel("Phone:", labelFont), gbc);
+        gbc.gridx = 1;
+        txtPhone = createTextField(fieldFont, textWidth);
+        formPanel.add(txtPhone, gbc);
+
+        // Password with “eye” icon
+        gbc.gridx = 0; gbc.gridy++;
+        formPanel.add(createLabel("Password:", labelFont), gbc);
+        gbc.gridx = 1;
+        JPanel passPanel = createPasswordPanel(fieldFont, textWidth);
+        txtPassword = (JPasswordField) passPanel.getComponent(0);
+        formPanel.add(passPanel, gbc);
+
+        gbc.gridx = 0; gbc.gridy++;
+        formPanel.add(createLabel("Confirm Password:", labelFont), gbc);
+        gbc.gridx = 1;
+        JPanel confirmPanel = createPasswordPanel(fieldFont, textWidth);
+        txtConfirmPassword = (JPasswordField) confirmPanel.getComponent(0);
+        formPanel.add(confirmPanel, gbc);
+
+        mainPanel.add(formPanel, BorderLayout.CENTER);
+
+        // ---------- BUTTONS ----------
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 30, 15));
+        buttonPanel.setBackground(Color.WHITE);
+
+        btnRegister = new JButton("Register");
+        ThemeManager.stylePrimaryButton(btnRegister);
+        btnRegister.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 14));
+        btnRegister.setPreferredSize(new Dimension(130, 38));
+        btnRegister.addActionListener(evt -> {
+            try { btnRegisterActionPerformed(); } catch (Exception e) { e.printStackTrace(); }
+        });
+
+        btnBack = new JButton("Back to Login");
+        ThemeManager.stylePrimaryButton(btnBack);
+        btnBack.setBackground(new Color(210, 220, 235));
+        btnBack.setForeground(new Color(40, 40, 40));
+        btnBack.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 14));
+        btnBack.setPreferredSize(new Dimension(150, 38));
+        btnBack.addActionListener(evt -> {
+            new Login().setVisible(true);
+            this.dispose();
+        });
+
+        buttonPanel.add(btnRegister);
+        buttonPanel.add(btnBack);
+        mainPanel.add(buttonPanel, BorderLayout.SOUTH);
+
+        getContentPane().add(mainPanel);
+        pack();
+        setLocationRelativeTo(null);
+    }
+
+    // -------------------------------------------------------------------------
+    private JLabel createLabel(String text, Font font) {
+        JLabel lbl = new JLabel(text);
+        lbl.setFont(font);
+        lbl.setForeground(new Color(60, 60, 60));
+        return lbl;
+    }
+
+    private JTextField createTextField(Font font, int width) {
+        JTextField tf = new JTextField();
+        tf.setFont(font);
+        tf.setPreferredSize(new Dimension(width, 30));
+        tf.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(200, 200, 200)),
+                BorderFactory.createEmptyBorder(4, 8, 4, 8)
+        ));
+        return tf;
+    }
+
+    private JPanel createPasswordPanel(Font font, int width) {
+        JPasswordField pf = new JPasswordField();
+        pf.setFont(font);
+        pf.setPreferredSize(new Dimension(width - 40, 30));
+        pf.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(200, 200, 200)),
+                BorderFactory.createEmptyBorder(4, 8, 4, 8)
+        ));
+
+        // ✅ Ensure the password field starts hidden
+        pf.setEchoChar('\u2022');  // bullet character
+
+        // Simple show/hide-eye toggle
+        JButton eyeBtn = new JButton("👁");
+        eyeBtn.setPreferredSize(new Dimension(40, 30));
+        eyeBtn.setFocusable(false);
+        eyeBtn.setBorder(BorderFactory.createEmptyBorder());
+        eyeBtn.setBackground(Color.WHITE);
+        eyeBtn.setMargin(new Insets(0, 0, 0, 0));
+
+        eyeBtn.addActionListener(e -> {
+            if (pf.getEchoChar() == '\u2022') {
+                // show password
+                pf.setEchoChar((char) 0);
+            } else {
+                // hide password again
+                pf.setEchoChar('\u2022');
+            }
+        });
+
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setOpaque(false);
+        panel.add(pf, BorderLayout.CENTER);
+        panel.add(eyeBtn, BorderLayout.EAST);
+        return panel;
+    }
+
+    // -------------------------------------------------------------------------
+    private void btnRegisterActionPerformed() throws Exception {
+        String firstName = txtFirstName.getText().trim();
+        String lastName = txtLastName.getText().trim();
+        String email = txtEmail.getText().trim();
+        String phone = txtPhone.getText().trim();
+        String password = new String(txtPassword.getPassword());
+        String confirmPassword = new String(txtConfirmPassword.getPassword());
+
+        // --- Blank check ---
+        if (firstName.isEmpty() || lastName.isEmpty() || email.isEmpty()
+                || phone.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
+            showError("Please fill in all fields.");
+            return;
+        }
+
+        // --- First/Last name validation (letters only, ≤50 chars) ---
+        if (!firstName.matches("^[A-Za-z]{1,50}$")) {
+            showError("First name must contain only letters and be up to 50 characters long.");
+            return;
+        }
+        if (!lastName.matches("^[A-Za-z]{1,50}$")) {
+            showError("Last name must contain only letters and be up to 50 characters long.");
+            return;
+        }
+
+        // --- Email validation ---
+        if (!email.matches("^[\\w._%+-]+@[\\w.-]+\\.[a-zA-Z]{2,6}$")) {
+            showError("Invalid email address.");
+            return;
+        }
+
+        // --- Phone validation ---
+        if (!phone.matches("^0\\d{9}$")) {
+            showError("Phone number must start with 0 and have 10 digits.");
+            return;
+        }
+
+        // --- Password exact length check ---
+        if (password.length() > 8) {
+            showError("Password must be under 8 characters long.");
+            return;
+        }
+
+        // --- Confirm password ---
+        if (!password.equals(confirmPassword)) {
+            showError("Passwords do not match.");
+            return;
+        }
+
+        // ---- Existing user check ----
+        Register registerLogic = new Register();
+        String existingUserId = registerLogic.findUserByEmail(email);
+        if (existingUserId != null) {
+            JOptionPane.showMessageDialog(this,
+                    "You are already registered! Please log in using your existing account.",
+                    "Already Registered",
+                    JOptionPane.INFORMATION_MESSAGE);
+            Login loginForm = new Login();
+            loginForm.prefillUserId(existingUserId);
+            loginForm.setVisible(true);
+            this.dispose();
+            return;
+        }
+
+        int confirm = JOptionPane.showConfirmDialog(this,
+                "Are you sure you want to register with these details?",
+                "Confirm Registration",
+                JOptionPane.YES_NO_OPTION);
+        if (confirm != JOptionPane.YES_OPTION) return;
+
+        // ---- Do registration ----
+        String userId = registerLogic.registerUndergraduate(firstName, lastName,
+                password, email, phone);
+        if (userId != null) {
+            JOptionPane.showMessageDialog(this,
+                    "Verification email sent to your email address.");
+            boolean emailSent = EmailSender.sendRegistrationEmail(email, userId, password);
+            if (emailSent) {
+                JOptionPane.showMessageDialog(this,
+                        "Registration successful! Please check your email for your credentials.",
+                        "Success", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this,
+                        "Account created successfully, but email could not be sent.",
+                        "Warning", JOptionPane.WARNING_MESSAGE);
+            }
+            new Login().setVisible(true);
+            this.dispose();
+        } else {
+            showError("Registration failed. Please try again.");
+        }
+    }
+
+    private void showError(String msg) {
+        JOptionPane.showMessageDialog(this, msg, "Validation Error", JOptionPane.ERROR_MESSAGE);
+    }
+
+    // -------------------------------------------------------------------------
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> new RegisterForm().setVisible(true));
+    }
+
+    // -------------------------------------------------------------------------
+    private JTextField txtFirstName;
+    private JTextField txtLastName;
+    private JTextField txtEmail;
+    private JTextField txtPhone;
+    private JPasswordField txtPassword;
+    private JPasswordField txtConfirmPassword;
+    private JButton btnRegister;
+    private JButton btnBack;
+}
